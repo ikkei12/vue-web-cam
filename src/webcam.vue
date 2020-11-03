@@ -67,6 +67,7 @@ export default {
   },
 
   mounted() {
+    console.log("cameraaaaa");
     this.setupMedia();
   },
 

@@ -222,7 +222,7 @@ export default {
      * test access
      */
     testMediaAccess() {
-      let constraints = { video: { facingMode: { exact: "environment" } } };
+      let constraints = { video: { facingMode: "environment" } };
 
       if (this.resolution) {
         constraints.video = {};
@@ -250,7 +250,7 @@ export default {
       let constraints = {
         video: {
           deviceId: { exact: device },
-          facingMode: { exact: "environment" },
+          facingMode: "environment",
         },
       };
 

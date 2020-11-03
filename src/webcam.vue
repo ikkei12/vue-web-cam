@@ -16,39 +16,39 @@ export default {
   props: {
     width: {
       type: [Number, String],
-      default: "100%"
+      default: "100%",
     },
     height: {
       type: [Number, String],
-      default: 500
+      default: 500,
     },
     autoplay: {
       type: Boolean,
-      default: true
+      default: true,
     },
     screenshotFormat: {
       type: String,
-      default: "image/jpeg"
+      default: "image/jpeg",
     },
     selectFirstDevice: {
       type: Boolean,
-      default: false
+      default: false,
     },
     deviceId: {
       type: String,
-      default: null
+      default: null,
     },
     playsinline: {
       type: Boolean,
-      default: true
+      default: true,
     },
     resolution: {
       type: Object,
       default: null,
-      validator: value => {
+      validator: (value) => {
         return value.height && value.width;
-      }
-    }
+      },
+    },
   },
 
   data() {
@@ -56,14 +56,14 @@ export default {
       source: null,
       canvas: null,
       camerasListEmitted: false,
-      cameras: []
+      cameras: [],
     };
   },
 
   watch: {
-    deviceId: function(id) {
+    deviceId: function (id) {
       this.changeCamera(id);
-    }
+    },
   },
 
   mounted() {
@@ -79,7 +79,7 @@ export default {
      * get user media
      */
     legacyGetUserMediaSupport() {
-      return constraints => {
+      return (constraints) => {
         // First get ahold of the legacy getUserMedia, if present
         let getUserMedia =
           navigator.getUserMedia ||
@@ -97,7 +97,7 @@ export default {
         }
 
         // Otherwise, wrap the call to the old navigator.getUserMedia with a Promise
-        return new Promise(function(resolve, reject) {
+        return new Promise(function (resolve, reject) {
           getUserMedia.call(navigator, constraints, resolve, reject);
         });
       };
@@ -124,7 +124,7 @@ export default {
     loadCameras() {
       navigator.mediaDevices
         .enumerateDevices()
-        .then(deviceInfos => {
+        .then((deviceInfos) => {
           for (let i = 0; i !== deviceInfos.length; ++i) {
             let deviceInfo = deviceInfos[i];
             if (deviceInfo.kind === "videoinput") {
@@ -142,7 +142,7 @@ export default {
             this.camerasListEmitted = true;
           }
         })
-        .catch(error => this.$emit("notsupported", error));
+        .catch((error) => this.$emit("notsupported", error));
     },
 
     /**
@@ -180,7 +180,7 @@ export default {
       let stream = videoElem.srcObject;
       let tracks = stream.getTracks();
 
-      tracks.forEach(track => {
+      tracks.forEach((track) => {
         // stops the video track
         track.stop();
         this.$emit("stopped", stream);
@@ -222,7 +222,7 @@ export default {
      * test access
      */
     testMediaAccess() {
-      let constraints = { video: true };
+      let constraints = { video: { facingMode: { exact: "environment" } } };
 
       if (this.resolution) {
         constraints.video = {};
@@ -232,22 +232,27 @@ export default {
 
       navigator.mediaDevices
         .getUserMedia(constraints)
-        .then(stream => {
+        .then((stream) => {
           //Make sure to stop this MediaStream
           let tracks = stream.getTracks();
-          tracks.forEach(track => {
+          tracks.forEach((track) => {
             track.stop();
           });
           this.loadCameras();
         })
-        .catch(error => this.$emit("error", error));
+        .catch((error) => this.$emit("error", error));
     },
 
     /**
      * load the camera passed as index!
      */
     loadCamera(device) {
-      let constraints = { video: { deviceId: { exact: device } } };
+      let constraints = {
+        video: {
+          deviceId: { exact: device },
+          facingMode: { exact: "environment" },
+        },
+      };
 
       if (this.resolution) {
         constraints.video.height = this.resolution.height;
@@ -256,8 +261,8 @@ export default {
 
       navigator.mediaDevices
         .getUserMedia(constraints)
-        .then(stream => this.loadSrcStream(stream))
-        .catch(error => this.$emit("error", error));
+        .then((stream) => this.loadSrcStream(stream))
+        .catch((error) => this.$emit("error", error));
     },
 
     /**
@@ -285,7 +290,7 @@ export default {
       ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
 
       return canvas;
-    }
-  }
+    },
+  },
 };
 </script>
